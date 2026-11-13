@@ -46,3 +46,28 @@
     @apply outline-3 outline-offset-2 outline-cobalto;
   }
 }
+
+/* Entrada do hero: único momento animado da home */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-copy {
+    animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .hero-mascots {
+    animation: hop 0.9s cubic-bezier(0.3, 1.4, 0.5, 1) 0.15s both;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@keyframes hop {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.92);
+  }
+}
