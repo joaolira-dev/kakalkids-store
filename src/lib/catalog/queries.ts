@@ -9,6 +9,7 @@ import type {
   FilterOptions,
   ProductDetail,
   ProductVariant,
+  SizeChart,
 } from "./types";
 
 /** Tag usada para revalidar a vitrine quando o admin altera produtos. */
@@ -164,4 +165,15 @@ export async function getProductBySlug(slug: string): Promise<ProductDetail | nu
     variants,
     images,
   };
+}
+
+export async function getSizeCharts(): Promise<SizeChart[]> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(CATALOG_TAG);
+
+  const supabase = createPublicClient();
+  const { data, error } = await supabase.from("size_charts").select("name, chart, notes").order("name");
+  if (error) throw new Error(`Erro ao carregar tabelas de medidas: ${error.message}`);
+  return (data ?? []) as SizeChart[];
 }

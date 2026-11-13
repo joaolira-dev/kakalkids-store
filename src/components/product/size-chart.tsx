@@ -1,12 +1,13 @@
 import type { SizeChart } from "@/lib/catalog/types";
 
-export function SizeChartTable({ chart }: { chart: SizeChart }) {
+export function SizeChartTable({ chart, titleOverride }: { chart: SizeChart; titleOverride?: string }) {
   const { columns, rows } = chart.chart;
+  const id = titleOverride ? `medidas-${titleOverride.toLowerCase().replace(/\W+/g, "-")}` : "medidas";
 
   return (
-    <section id="medidas" aria-labelledby="medidas-titulo" className="scroll-mt-28">
-      <h2 id="medidas-titulo" className="text-2xl sm:text-3xl">
-        Tabela de medidas
+    <section id={id} aria-labelledby={`${id}-titulo`} className="scroll-mt-28">
+      <h2 id={`${id}-titulo`} className="text-2xl sm:text-3xl">
+        {titleOverride ?? "Tabela de medidas"}
       </h2>
       {chart.notes && <p className="mt-2 max-w-prose text-marinho-soft">{chart.notes}</p>}
       <div className="mt-5 overflow-x-auto rounded-3xl bg-white ring-2 ring-marinho/10">
