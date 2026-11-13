@@ -108,3 +108,10 @@ export const cart = {
     save([]);
   },
 };
+
+const noopSubscribe = () => () => {};
+
+/** false durante o SSR e a hidratação; true quando a sacola salva já foi lida. */
+export function useCartReady() {
+  return useSyncExternalStore(noopSubscribe, () => true, () => false);
+}
