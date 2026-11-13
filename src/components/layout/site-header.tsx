@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Menu, Search, ShoppingBag, X } from "lucide-react";
+import { useCallback, useState } from "react";
+import { Menu, Search, ShoppingBag } from "lucide-react";
+import { MobileMenu } from "./mobile-menu";
 import { mainNav, siteConfig } from "@/config/site";
 import { useCartCount } from "@/lib/cart/store";
 
@@ -11,17 +12,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const count = useCartCount();
 
-  // Trava o scroll da página com o menu mobile aberto e fecha com Esc
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
+  const close = useCallback(() => setOpen(false), []);
 
   return (
     <header className="sticky top-0 z-40 bg-creme/95 backdrop-blur supports-[backdrop-filter]:bg-creme/80">
@@ -92,48 +83,7 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Menu mobile */}
-      <div
-        id="menu-mobile"
-        className={`fixed inset-0 z-50 lg:hidden ${open ? "" : "pointer-events-none"}`}
-        aria-hidden={!open}
-      >
-        <div
-          className={`absolute inset-0 bg-marinho/40 transition-opacity motion-reduce:transition-none ${open ? "opacity-100" : "opacity-0"}`}
-          onClick={() => setOpen(false)}
-        />
-        <nav
-          aria-label="Menu"
-          className={`absolute inset-y-0 left-0 flex w-[min(20rem,85vw)] flex-col bg-creme p-6 shadow-xl transition-transform motion-reduce:transition-none ${open ? "translate-x-0" : "-translate-x-full"}`}
-        >
-          <div className="mb-6 flex items-center justify-between">
-            <span className="font-display text-xl font-semibold">Menu</span>
-            <button
-              type="button"
-              className="-mr-2 rounded-full p-2"
-              aria-label="Fechar menu"
-              onClick={() => setOpen(false)}
-              tabIndex={open ? 0 : -1}
-            >
-              <X className="size-6" />
-            </button>
-          </div>
-          <ul className="flex flex-col gap-1">
-            {mainNav.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  tabIndex={open ? 0 : -1}
-                  className="block rounded-2xl px-4 py-3 font-display text-xl font-medium hover:bg-sol"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
+      <MobileMenu open={open} onClose={close} />
     </header>
   );
 }
