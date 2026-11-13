@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  // Permite abrir o servidor de dev por 127.0.0.1 além de localhost
+  allowedDevOrigins: ["127.0.0.1"],
+  async redirects() {
+    return [{ source: "/admin", destination: "/admin/pedidos", permanent: false }];
+  },
   images: {
     remotePatterns: [
       {
