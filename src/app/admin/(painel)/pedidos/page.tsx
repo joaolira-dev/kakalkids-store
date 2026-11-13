@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Search } from "lucide-react";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
 import { deliveryOptions } from "@/config/site";
@@ -25,7 +26,15 @@ function href(status: OrderStatus | null, search?: string | null, page = 1) {
   return qs ? `/admin/pedidos?${qs}` : "/admin/pedidos";
 }
 
-export default async function OrdersPage({ searchParams }: PageProps<"/admin/pedidos">) {
+export default function OrdersPage({ searchParams }: PageProps<"/admin/pedidos">) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <Orders searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function Orders({ searchParams }: { searchParams: PageProps<"/admin/pedidos">["searchParams"] }) {
   const params = await searchParams;
   const rawStatus = typeof params.status === "string" ? params.status : null;
   const status = rawStatus && (ORDER_STATUSES as string[]).includes(rawStatus) ? (rawStatus as OrderStatus) : null;
@@ -154,5 +163,15 @@ function TabLink({ href, active, children }: { href: string; active: boolean; ch
     >
       {children}
     </Link>
+  );
+}
+
+function PageSkeleton() {
+  return (
+    <div aria-hidden="true" className="mx-auto max-w-6xl animate-pulse space-y-6 motion-reduce:animate-none">
+      <div className="h-10 w-40 rounded-full bg-creme-dark" />
+      <div className="h-10 w-full max-w-xl rounded-full bg-creme-dark" />
+      <div className="h-80 rounded-3xl bg-creme-dark" />
+    </div>
   );
 }

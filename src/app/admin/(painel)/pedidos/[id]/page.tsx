@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { ArrowLeft, MessageCircle } from "lucide-react";
 import { OrderActions } from "@/components/admin/order-actions";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
@@ -10,7 +11,15 @@ import { customerWhatsappLink, formatDateTime, formatPhone, formatPrice } from "
 
 export const metadata: Metadata = { title: "Pedido" };
 
-export default async function OrderPage({ params }: PageProps<"/admin/pedidos/[id]">) {
+export default function OrderPage({ params }: PageProps<"/admin/pedidos/[id]">) {
+  return (
+    <Suspense fallback={<OrderSkeleton />}>
+      <Order params={params} />
+    </Suspense>
+  );
+}
+
+async function Order({ params }: { params: PageProps<"/admin/pedidos/[id]">["params"] }) {
   const { id } = await params;
   const order = await getOrder(id);
   if (!order) notFound();
@@ -145,6 +154,18 @@ export default async function OrderPage({ params }: PageProps<"/admin/pedidos/[i
           </section>
         </div>
       </div>
+    </div>
+  );
+}
+
+function OrderSkeleton() {
+  return (
+    <div aria-hidden="true" className="mx-auto grid max-w-6xl animate-pulse gap-6 motion-reduce:animate-none lg:grid-cols-[1fr_20rem]">
+      <div className="space-y-6">
+        <div className="h-10 w-56 rounded-full bg-creme-dark" />
+        <div className="h-72 rounded-3xl bg-creme-dark" />
+      </div>
+      <div className="h-56 rounded-3xl bg-creme-dark" />
     </div>
   );
 }
