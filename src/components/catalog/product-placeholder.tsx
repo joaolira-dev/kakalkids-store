@@ -7,7 +7,7 @@ export function ProductPlaceholder({ seed, className = "" }: { seed: string; cla
   const tint = tints[[...seed].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) % tints.length];
   return (
     <div className={`flex items-center justify-center ${tint} ${className}`}>
-      <Image src="/brand/logo-icone.png" alt="" width={96} height={96} className="size-1/3 rounded-full opacity-90" />
+      <Image src="/brand/logo-icone.png" alt="" width={96} height={96} className="aspect-square h-auto w-1/3 max-w-32 rounded-full opacity-90" />
     </div>
   );
 }

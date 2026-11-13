@@ -235,7 +235,7 @@ export function ProductPurchase({ product, whatsappHref }: Props) {
             <button
               type="button"
               onClick={addToCart}
-              className="flex h-14 flex-1 items-center justify-center gap-2.5 rounded-full bg-rosa px-8 font-display text-lg font-semibold text-white transition-transform hover:-translate-y-0.5 active:translate-y-0"
+              className="flex h-14 min-w-56 flex-1 items-center justify-center gap-2.5 rounded-full bg-rosa px-8 font-display text-lg font-semibold text-white transition-transform hover:-translate-y-0.5 active:translate-y-0"
             >
               <ShoppingBag className="size-5" aria-hidden="true" />
               Adicionar à sacola
