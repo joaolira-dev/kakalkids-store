@@ -30,7 +30,7 @@ export function StockRowActions({ variantId, stock, label }: { variantId: string
         aria-label={`Tipo de alteração para ${label}`}
         value={mode}
         onChange={(e) => setMode(e.target.value as "entrada" | "definir")}
-        className="h-10 rounded-xl border-2 border-marinho/15 bg-white px-2 text-sm font-semibold"
+        className="h-10 min-w-34 rounded-xl border-2 border-marinho/15 bg-white px-2 text-sm font-semibold"
       >
         <option value="entrada">Chegaram +</option>
         <option value="definir">Contei =</option>
