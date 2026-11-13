@@ -9,7 +9,7 @@ const items = [
   { href: "/admin/pedidos", label: "Pedidos", icon: ClipboardList, ready: true },
   { href: "/admin/produtos", label: "Produtos", icon: Package, ready: true },
   { href: "/admin/estoque", label: "Estoque", icon: Boxes, ready: false },
-  { href: "/admin/cupons", label: "Cupons", icon: TicketPercent, ready: false },
+  { href: "/admin/cupons", label: "Cupons", icon: TicketPercent, ready: true },
 ];
 
 export function AdminNav() {
