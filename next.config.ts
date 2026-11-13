@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    // As fotos já são comprimidas em WebP no upload e servidas pelo CDN do
+    // Supabase. Sem otimização, o Next não as passa pelo CDN da hospedagem,
+    // o que poupa a banda do plano gratuito.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
