@@ -7,7 +7,7 @@
 -- SECURITY DEFINER. O navegador nunca define preço nem mexe em estoque.
 -- =====================================================================
 
-create extension if not exists citext;
+create extension if not exists citext with schema extensions;
 
 -- ---------------------------------------------------------------------
 -- Enums
@@ -28,7 +28,7 @@ create table admins (
 
 create or replace function is_admin()
 returns boolean
-language sql stable security definer set search_path = public
+language sql stable security definer set search_path = public, extensions
 as $$
   select exists (select 1 from admins where user_id = auth.uid());
 $$;
@@ -48,7 +48,7 @@ $$;
 create table categories (
   id         uuid primary key default gen_random_uuid(),
   name       text not null,
-  slug       citext not null unique,
+  slug       extensions.citext not null unique,
   parent_id  uuid references categories (id) on delete set null,
   sort_order int not null default 0,
   active     boolean not null default true
@@ -57,7 +57,7 @@ create table categories (
 create table collections (
   id          uuid primary key default gen_random_uuid(),
   name        text not null,
-  slug        citext not null unique,
+  slug        extensions.citext not null unique,
   description text,
   banner_url  text,
   sort_order  int not null default 0,
@@ -90,7 +90,7 @@ create table size_charts (
 create table products (
   id               uuid primary key default gen_random_uuid(),
   name             text not null,
-  slug             citext not null unique,
+  slug             extensions.citext not null unique,
   description      text,
   category_id      uuid references categories (id) on delete set null,
   gender           gender not null default 'unissex',
@@ -145,7 +145,7 @@ create index on product_images (product_id, sort_order);
 -- ---------------------------------------------------------------------
 create table coupons (
   id              uuid primary key default gen_random_uuid(),
-  code            citext not null unique,
+  code            extensions.citext not null unique,
   type            coupon_type not null,
   value           numeric(10,2) not null check (value > 0),
   min_order_value numeric(10,2) not null default 0,
@@ -259,11 +259,11 @@ group by p.id, c.slug;
 -- Pré-visualização do cupom no carrinho (o cliente não lê a tabela de cupons)
 create or replace function preview_coupon(p_code text, p_subtotal numeric)
 returns table (valid boolean, discount numeric, message text)
-language plpgsql stable security definer set search_path = public
+language plpgsql stable security definer set search_path = public, extensions
 as $$
 declare c coupons;
 begin
-  select * into c from coupons where code = p_code::citext;
+  select * into c from coupons where code = p_code::extensions.citext;
   if not found or not c.active then
     return query select false, 0::numeric, 'Cupom inválido'; return;
   end if;
@@ -297,7 +297,7 @@ create or replace function create_order(
   p_notes          text default null
 )
 returns table (order_id uuid, order_number bigint, subtotal numeric, discount numeric, total numeric)
-language plpgsql security definer set search_path = public
+language plpgsql security definer set search_path = public, extensions
 as $$
 declare
   v_order_id uuid;
@@ -356,7 +356,7 @@ begin
       raise exception '%', v_cp.message;
     end if;
     v_discount := v_cp.discount;
-    select * into v_coupon from coupons where code = p_coupon_code::citext;
+    select * into v_coupon from coupons where code = p_coupon_code::extensions.citext;
   end if;
 
   update orders set
@@ -377,7 +377,7 @@ $$;
 -- pedido já confirmado devolve o estoque.
 create or replace function set_order_status(p_order_id uuid, p_status order_status)
 returns void
-language plpgsql security definer set search_path = public
+language plpgsql security definer set search_path = public, extensions
 as $$
 declare
   o orders;
@@ -440,7 +440,7 @@ create or replace function adjust_stock(
   p_variant_id uuid, p_delta int, p_reason stock_reason default 'entrada', p_note text default null
 )
 returns int
-language plpgsql security definer set search_path = public
+language plpgsql security definer set search_path = public, extensions
 as $$
 declare new_stock int;
 begin
@@ -511,6 +511,19 @@ create policy "admin read" on order_items          for select using (is_admin())
 create policy "admin read" on order_status_history for select using (is_admin());
 create policy "admin read" on stock_movements      for select using (is_admin());
 create policy "admin read" on admins               for select using (user_id = auth.uid());
+
+-- Permissões base (o RLS acima decide as linhas; aqui decidimos as tabelas)
+grant usage on schema public to anon, authenticated;
+grant select on categories, collections, sizes, colors, size_charts, products,
+  product_collections, product_variants, product_images, store_settings, catalog_products
+  to anon, authenticated;
+grant insert, update, delete on categories, collections, sizes, colors, size_charts, products,
+  product_collections, product_variants, product_images, coupons
+  to authenticated;
+grant select on coupons, orders, order_items, order_status_history, stock_movements, admins
+  to authenticated;
+grant update on store_settings to authenticated;
+revoke all on coupons, orders, order_items, order_status_history, stock_movements, admins from anon;
 
 -- Protege colunas: nem o admin altera estoque/totais "na mão" pelo client.
 -- (revoke na tabela inteira + grant só nas colunas editáveis)
