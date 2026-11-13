@@ -26,6 +26,8 @@ export type PlaceOrderInput = {
   notes: string;
   coupon: string | null;
   items: { variantId: string; quantity: number }[];
+  /** Campo invisível: pessoas deixam vazio, robôs de spam preenchem. */
+  website?: string;
 };
 
 export type PlaceOrderResult =
@@ -33,6 +35,8 @@ export type PlaceOrderResult =
   | { ok: false; error: string };
 
 export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResult> {
+  if (input.website?.trim()) return { ok: false, error: "Não conseguimos registrar seu pedido agora. Tente de novo em instantes." };
+
   const name = input.name.trim().slice(0, 120);
   const phone = input.phone.replace(/\D/g, "");
   const notes = input.notes.trim().slice(0, 500);

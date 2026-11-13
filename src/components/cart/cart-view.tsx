@@ -51,6 +51,7 @@ function Checkout({
   const [phone, setPhone] = useState("");
   const [delivery, setDelivery] = useState<DeliveryMethod | null>(null);
   const [notes, setNotes] = useState("");
+  const [website, setWebsite] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, startSubmit] = useTransition();
 
@@ -105,6 +106,7 @@ function Checkout({
         delivery,
         notes,
         coupon: coupon?.code ?? null,
+        website,
         items: items.map((i) => ({ variantId: i.variantId, quantity: i.quantity })),
       });
       if (!result.ok) {
@@ -135,7 +137,7 @@ function Checkout({
       </section>
 
       {/* Resumo e finalização */}
-      <form onSubmit={submit} className="flex flex-col gap-6 rounded-[2rem] bg-white p-6 sm:p-7 lg:sticky lg:top-32" noValidate>
+      <form onSubmit={submit} className="relative flex flex-col gap-6 rounded-[2rem] bg-white p-6 sm:p-7 lg:sticky lg:top-32" noValidate>
         <div>
           <h2 className="text-2xl">Resumo</h2>
           <dl className="mt-4 space-y-2">
@@ -271,6 +273,12 @@ function Checkout({
             className={`${inputClass} h-auto py-3`}
           />
         </Field>
+
+        {/* Armadilha para robôs: invisível para pessoas e leitores de tela */}
+        <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+          <label htmlFor="website">Não preencha este campo</label>
+          <input id="website" name="website" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
+        </div>
 
         {error && (
           <p role="alert" className="rounded-2xl bg-coral/15 p-3.5 font-semibold text-marinho">
