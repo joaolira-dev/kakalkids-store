@@ -5,9 +5,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, Search, ShoppingBag, X } from "lucide-react";
 import { mainNav, siteConfig } from "@/config/site";
+import { useCartCount } from "@/lib/cart/store";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const count = useCartCount();
 
   // Trava o scroll da página com o menu mobile aberto e fecha com Esc
   useEffect(() => {
@@ -80,6 +82,12 @@ export function SiteHeader() {
             <ShoppingBag className="size-5" aria-hidden="true" />
             <span className="hidden sm:inline">Sacola</span>
             <span className="sr-only sm:hidden">Sacola</span>
+            {count > 0 && (
+              <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-sol px-1.5 text-sm font-bold text-marinho">
+                {count}
+                <span className="sr-only"> {count === 1 ? "item" : "itens"}</span>
+              </span>
+            )}
           </Link>
         </div>
       </div>
