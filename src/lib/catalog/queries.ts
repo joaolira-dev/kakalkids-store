@@ -177,3 +177,14 @@ export async function getSizeCharts(): Promise<SizeChart[]> {
   if (error) throw new Error(`Erro ao carregar tabelas de medidas: ${error.message}`);
   return (data ?? []) as SizeChart[];
 }
+
+export async function getSitemapProducts(): Promise<{ slug: string; updated_at: string }[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CATALOG_TAG);
+
+  const supabase = createPublicClient();
+  const { data, error } = await supabase.from("products").select("slug, updated_at").eq("active", true).limit(5000);
+  if (error) throw new Error(`Erro ao gerar sitemap: ${error.message}`);
+  return (data ?? []).map((p) => ({ slug: String(p.slug), updated_at: p.updated_at }));
+}
