@@ -148,6 +148,7 @@ export async function saveVariants(productId: string, variants: VariantInput[]):
 
   const existing = new Map((existingRows ?? []).map((v) => [`${v.color_id ?? "-"}|${v.size_id}`, v]));
   const keep = new Set<string>();
+  const inserts: Record<string, unknown>[] = [];
   let changed = 0;
 
   for (const v of variants) {
@@ -183,12 +184,15 @@ export async function saveVariants(productId: string, variants: VariantInput[]):
         changed++;
       }
     } else {
-      const { error } = await supabase
-        .from("product_variants")
-        .insert({ product_id: productId, color_id: v.color_id, size_id: v.size_id, stock, price_override: price, sku });
-      if (error) return { ok: false, error: error.code === "23505" ? `O SKU ${sku} já está em uso.` : "Erro ao criar variação." };
-      changed++;
+      inserts.push({ product_id: productId, color_id: v.color_id, size_id: v.size_id, stock, price_override: price, sku });
     }
+  }
+
+  // Variações novas vão num único insert
+  if (inserts.length) {
+    const { error } = await supabase.from("product_variants").insert(inserts);
+    if (error) return { ok: false, error: error.code === "23505" ? "Há um SKU repetido na grade." : "Erro ao criar variações." };
+    changed += inserts.length;
   }
 
   // Variações que saíram da grade são desativadas (o histórico de pedidos continua intacto)
