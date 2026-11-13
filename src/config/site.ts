@@ -35,3 +35,11 @@ export const helpNav: NavItem[] = [
   { label: "Trocas", href: "/trocas" },
   { label: "Guia de tamanhos", href: "/guia-de-tamanhos" },
 ];
+
+export type DeliveryMethod = "pickup" | "local_delivery" | "shipping";
+
+export const deliveryOptions: { value: DeliveryMethod; label: string; description: string }[] = [
+  { value: "pickup", label: "Retirar", description: "Combine o horário e retire em João Pessoa" },
+  { value: "local_delivery", label: "Entrega local", description: "Entregamos em João Pessoa e região" },
+  { value: "shipping", label: "Envio pelos Correios", description: "Para todo o Brasil, frete combinado no WhatsApp" },
+];
