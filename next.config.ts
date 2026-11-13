@@ -5,7 +5,11 @@ const nextConfig: NextConfig = {
   // Permite abrir o servidor de dev por 127.0.0.1 além de localhost
   allowedDevOrigins: ["127.0.0.1"],
   async redirects() {
-    return [{ source: "/admin", destination: "/admin/pedidos", permanent: false }];
+    return [
+      { source: "/admin", destination: "/admin/pedidos", permanent: false },
+      // "Looks" (como nos destaques do Instagram) = conjuntos prontos
+      { source: "/looks", destination: "/catalogo?categoria=conjuntos", permanent: false },
+    ];
   },
   images: {
     remotePatterns: [
