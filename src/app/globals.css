@@ -1,26 +1,48 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Identidade visual KakalKids Store
+ * Regras de contraste (WCAG AA):
+ *  - Texto padrão sempre em marinho.
+ *  - Sol e turquesa: só como fundo, com texto marinho.
+ *  - Coral e rosa: texto branco só em tamanho grande/negrito (botões, selos).
+ *  - Cobalto: aceita texto branco em qualquer tamanho.
+ */
+@theme {
+  --color-coral: #ff4f45;
+  --color-sol: #ffd000;
+  --color-cobalto: #3764f4;
+  --color-rosa: #f74e92;
+  --color-turquesa: #00c8d4;
+  --color-marinho: #182b55;
+  --color-creme: #fff9ef;
+
+  --color-marinho-soft: #46557a;
+  --color-creme-dark: #f5ead8;
+
+  --font-display: var(--font-fredoka), ui-rounded, sans-serif;
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-blob: 2rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    color-scheme: light;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-creme font-sans text-marinho antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-semibold tracking-tight;
+  }
+
+  :focus-visible {
+    @apply outline-3 outline-offset-2 outline-cobalto;
+  }
 }
